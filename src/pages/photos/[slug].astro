@@ -31,18 +31,19 @@ const nextPhoto = photoIndex >= 0 && photoIndex < photos.length - 1 ? photos[pho
 <html lang="en">
 	<head>
 		<BaseHead title={`${SITE_TITLE} | ${photo.data.title}`} description={photo.data.description ?? SITE_DESCRIPTION} />
+		<meta name="view-transition" content="same-origin" />
 	</head>
-	<body>
+	<body class="photo-detail">
 		<Header />
 		<main>
 			<section class="page-intro">
 				<p class="tagline">Photo</p>
-				<h1>{photo.data.title}</h1>
-				<p>{photo.data.description}</p>
+				<h1 class="photo-detail__title">{photo.data.title}</h1>
+				<p class="photo-detail__description">{photo.data.description}</p>
 			</section>
 
 			<section>
-				<div class="post-meta">
+				<div class="post-meta photo-detail__meta">
 					<FormattedDate date={photo.data.capturedDate} />
 					{photo.data.location ? ` • ${photo.data.location}` : ''}
 					{photo.data.camera ? ` • ${photo.data.camera}` : ''}
@@ -85,6 +86,26 @@ const nextPhoto = photoIndex >= 0 && photoIndex < photos.length - 1 ? photos[pho
 			const lightbox = document.querySelector('.lightbox');
 			const lightboxTriggers = document.querySelectorAll('.photo-lightbox-trigger');
 			const lightboxClose = document.querySelectorAll('[data-lightbox-close]');
+			const root = document.documentElement;
+			const enableGlow = () => {
+				root.classList.remove('photo-glow-active');
+				requestAnimationFrame(() => {
+					root.classList.add('photo-glow-active');
+				});
+			};
+			const storedGlow = sessionStorage.getItem('photoGlow');
+			if (storedGlow) {
+				try {
+					const { top, bottom } = JSON.parse(storedGlow);
+					if (top && bottom) {
+						root.style.setProperty('--accent-glow', top);
+						root.style.setProperty('--accent-secondary-glow', bottom);
+						enableGlow();
+					}
+				} catch (error) {
+					sessionStorage.removeItem('photoGlow');
+				}
+			}
 			if (image) {
 				const applyGlow = () => {
 					const canvas = document.createElement('canvas');
@@ -121,10 +142,12 @@ const nextPhoto = photoIndex >= 0 && photoIndex < photos.length - 1 ? photos[pho
 
 					const top = sampleEdge('top');
 					const bottom = sampleEdge('bottom');
-					const root = document.documentElement;
-					root.style.setProperty('--accent-glow', `rgba(${top.r}, ${top.g}, ${top.b}, 0.8)`);
-					root.style.setProperty('--accent-secondary-glow', `rgba(${bottom.r}, ${bottom.g}, ${bottom.b}, 0.6)`);
-					root.classList.add('photo-glow-active');
+					const topColor = `rgba(${top.r}, ${top.g}, ${top.b}, 0.8)`;
+					const bottomColor = `rgba(${bottom.r}, ${bottom.g}, ${bottom.b}, 0.6)`;
+					root.style.setProperty('--accent-glow', topColor);
+					root.style.setProperty('--accent-secondary-glow', bottomColor);
+					enableGlow();
+					sessionStorage.setItem('photoGlow', JSON.stringify({ top: topColor, bottom: bottomColor }));
 				};
 
 				if (image.complete) {
@@ -159,12 +182,29 @@ const nextPhoto = photoIndex >= 0 && photoIndex < photos.length - 1 ? photos[pho
 			window.addEventListener('keydown', (event) => {
 				if (event.key === 'Escape') closeLightbox();
 				if (event.key === 'ArrowLeft' && prevLink) {
-					window.location.assign(prevLink);
+					navigateTo(prevLink);
 				}
 				if (event.key === 'ArrowRight' && nextLink) {
-					window.location.assign(nextLink);
+					navigateTo(nextLink);
 				}
 			});
+
+			const navigateTo = (href) => {
+				if (!href) return;
+				const start = document.startViewTransition;
+				if (typeof start === 'function') {
+					try {
+						start(() => {
+							window.location.assign(href);
+						});
+						return;
+					} catch (error) {
+						// fall through to the fade-out fallback
+					}
+				}
+				document.body.classList.add('photo-transition-out');
+				setTimeout(() => window.location.assign(href), 260);
+			};
 		</script>
 	</body>
 </html>

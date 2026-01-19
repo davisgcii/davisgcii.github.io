@@ -22,6 +22,18 @@
 		"Liberation Mono", "Courier New", monospace;
 }
 
+@property --accent-glow {
+	syntax: "<color>";
+	inherits: true;
+	initial-value: rgba(254, 100, 11, 0.18);
+}
+
+@property --accent-secondary-glow {
+	syntax: "<color>";
+	inherits: true;
+	initial-value: rgba(23, 146, 153, 0.14);
+}
+
 html[data-theme="mocha"] {
 	--bg: #1e1e2e;
 	--bg-alt: #181825;
@@ -79,13 +91,21 @@ body::after {
 	background: radial-gradient(70% 50% at 10% 0%, var(--accent-glow), transparent 55%),
 		radial-gradient(70% 50% at 90% 100%, var(--accent-secondary-glow), transparent 55%);
 	opacity: 0;
-	transition: opacity 0.6s ease;
+	transition: opacity 2s ease;
 	pointer-events: none;
 	z-index: 0;
 }
 
 html.photo-glow-active body::after {
 	opacity: 1;
+}
+
+body.photo-transition-out::after {
+	opacity: 0;
+}
+
+html {
+	transition: --accent-glow 2s ease, --accent-secondary-glow 2s ease;
 }
 
 main,
@@ -99,6 +119,30 @@ main {
 	width: min(100% - 2.5rem, 980px);
 	margin: 0 auto;
 	padding: 2.8rem 0 4.5rem;
+}
+
+.photo-detail main {
+	transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.photo-transition-out main {
+	opacity: 0;
+	transform: translateY(8px);
+}
+
+.photo-detail .post-hero__image {
+	animation: photo-image-in 0.9s ease both;
+}
+
+@keyframes photo-image-in {
+	from {
+		opacity: 0;
+		transform: translateY(6px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
 }
 
 h1,
@@ -390,6 +434,38 @@ hr {
 	object-fit: contain;
 	background: var(--surface);
 	margin: 0;
+}
+
+.photo-detail .post-hero__image {
+	view-transition-name: photo-hero;
+}
+
+.photo-detail__title {
+	view-transition-name: photo-title;
+}
+
+.photo-detail__description {
+	view-transition-name: photo-description;
+}
+
+.photo-detail__meta {
+	view-transition-name: photo-meta;
+}
+
+::view-transition-old(photo-hero),
+::view-transition-new(photo-hero) {
+	animation-duration: 0.9s;
+	animation-timing-function: ease;
+}
+
+::view-transition-old(photo-title),
+::view-transition-new(photo-title),
+::view-transition-old(photo-description),
+::view-transition-new(photo-description),
+::view-transition-old(photo-meta),
+::view-transition-new(photo-meta) {
+	animation-duration: 1s;
+	animation-timing-function: ease;
 }
 
 .lightbox {
