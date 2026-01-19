@@ -1,0 +1,58 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import FormattedDate from '../../components/FormattedDate.astro';
+import Header from '../../components/Header.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
+
+const photos = (await getCollection('photos')).sort(
+	(a, b) => b.data.capturedDate.valueOf() - a.data.capturedDate.valueOf(),
+);
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={`${SITE_TITLE} | Photos`} description={SITE_DESCRIPTION} />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<section class="page-intro">
+				<p class="tagline">Photo diary</p>
+				<h1>Light, places, and quiet mornings.</h1>
+				<p>
+					A living grid of small moments. Each frame includes the details I want to remember later.
+				</p>
+			</section>
+
+			<section>
+				<div class="section-title">
+					<span>Recent frames</span>
+					<span>{photos.length} photos</span>
+				</div>
+				<div class="grid photo-grid stagger">
+					{
+						photos.map((photo, index) => (
+							<a
+								class="card"
+								href={`/photos/${photo.id}/`}
+								style={`--i:${index}`}
+							>
+								<Image src={photo.data.heroImage} alt={photo.data.title} width={600} height={450} />
+								<h3 class="card-title">{photo.data.title}</h3>
+								<p class="card-meta">
+									<FormattedDate date={photo.data.capturedDate} />
+									{photo.data.location ? ` • ${photo.data.location}` : ''}
+								</p>
+							</a>
+						))
+					}
+				</div>
+			</section>
+		</main>
+		<Footer />
+	</body>
+</html>

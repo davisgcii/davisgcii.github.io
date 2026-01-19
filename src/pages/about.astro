@@ -1,0 +1,43 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={`${SITE_TITLE} | About`} description={SITE_DESCRIPTION} />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<section class="page-intro">
+				<p class="tagline">About</p>
+				<h1>Hi, I am George.</h1>
+				<p>
+					I write about the craft of building products, leadership, and the small systems that make
+					work feel intentional. Photography keeps me grounded and observant.
+				</p>
+			</section>
+
+			<section class="hero">
+				<div class="hero-card">
+					<h2>What I do</h2>
+					<p>
+						Design and build thoughtful digital products. I like long-term thinking, calm interfaces,
+						and dependable teams.
+					</p>
+				</div>
+				<div class="hero-card">
+					<h2>What I collect</h2>
+					<p>
+						Light through windows, early coffee, and places that feel like a pause in the day.
+					</p>
+				</div>
+			</section>
+		</main>
+		<Footer />
+	</body>
+</html>

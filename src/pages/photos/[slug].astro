@@ -1,0 +1,54 @@
+---
+import { Image } from 'astro:assets';
+import { type CollectionEntry, getCollection, render } from 'astro:content';
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import FormattedDate from '../../components/FormattedDate.astro';
+import Header from '../../components/Header.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
+
+export async function getStaticPaths() {
+	const photos = await getCollection('photos');
+	return photos.map((photo) => ({
+		params: { slug: photo.id },
+		props: photo,
+	}));
+}
+
+type Props = CollectionEntry<'photos'>;
+
+const photo = Astro.props as Props;
+const { Content } = await render(photo);
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={`${SITE_TITLE} | ${photo.data.title}`} description={photo.data.description ?? SITE_DESCRIPTION} />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<section class="page-intro">
+				<p class="tagline">Photo</p>
+				<h1>{photo.data.title}</h1>
+				<p>{photo.data.description}</p>
+			</section>
+
+			<section>
+				<div class="post-meta">
+					<FormattedDate date={photo.data.capturedDate} />
+					{photo.data.location ? ` • ${photo.data.location}` : ''}
+					{photo.data.camera ? ` • ${photo.data.camera}` : ''}
+				</div>
+				<div class="post-hero">
+					<Image src={photo.data.heroImage} alt={photo.data.title} width={1200} height={900} />
+				</div>
+				<div class="prose">
+					<Content />
+				</div>
+			</section>
+		</main>
+		<Footer />
+	</body>
+</html>

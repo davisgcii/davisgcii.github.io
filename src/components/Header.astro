@@ -1,0 +1,18 @@
+---
+import { SITE_TITLE } from '../consts';
+import HeaderLink from './HeaderLink.astro';
+import ThemeToggle from './ThemeToggle.astro';
+---
+
+<header class="site-header">
+	<nav>
+		<a class="site-title" href="/">{SITE_TITLE}</a>
+		<div class="nav-links">
+			<HeaderLink href="/">Home</HeaderLink>
+			<HeaderLink href="/blog">Blog</HeaderLink>
+			<HeaderLink href="/photos">Photos</HeaderLink>
+			<HeaderLink href="/about">About</HeaderLink>
+		</div>
+		<ThemeToggle />
+	</nav>
+</header>
