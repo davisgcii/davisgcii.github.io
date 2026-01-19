@@ -19,6 +19,12 @@ type Props = CollectionEntry<'photos'>;
 
 const photo = Astro.props as Props;
 const { Content } = await render(photo);
+const photos = (await getCollection('photos')).sort(
+	(a, b) => b.data.capturedDate.valueOf() - a.data.capturedDate.valueOf(),
+);
+const photoIndex = photos.findIndex((entry) => entry.id === photo.id);
+const prevPhoto = photoIndex > 0 ? photos[photoIndex - 1] : null;
+const nextPhoto = photoIndex >= 0 && photoIndex < photos.length - 1 ? photos[photoIndex + 1] : null;
 ---
 
 <!doctype html>
@@ -42,7 +48,25 @@ const { Content } = await render(photo);
 					{photo.data.camera ? ` • ${photo.data.camera}` : ''}
 				</div>
 				<div class="post-hero">
-					<Image class="post-hero__image" src={photo.data.heroImage} alt={photo.data.title} width={1200} height={900} />
+					<button
+						class="photo-lightbox-trigger"
+						type="button"
+						aria-label={`Open full-size image of ${photo.data.title}`}
+					>
+						<Image class="post-hero__image" src={photo.data.heroImage} alt={photo.data.title} width={1200} height={900} />
+					</button>
+				</div>
+				<div class="lightbox" aria-hidden="true">
+					<div class="lightbox__backdrop" data-lightbox-close></div>
+					<div class="lightbox__content" role="dialog" aria-modal="true" aria-label={`Full-size image of ${photo.data.title}`}>
+						<button class="lightbox__close" type="button" aria-label="Close image" data-lightbox-close>
+							<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6">
+								<line x1="6" y1="6" x2="18" y2="18" />
+								<line x1="6" y1="18" x2="18" y2="6" />
+							</svg>
+						</button>
+						<img class="lightbox__image" src={photo.data.heroImage.src} alt={photo.data.title} loading="lazy" />
+					</div>
 				</div>
 				<div class="prose">
 					<Content />
@@ -50,8 +74,17 @@ const { Content } = await render(photo);
 			</section>
 		</main>
 		<Footer />
-		<script is:inline>
+		<script
+			is:inline
+			define:vars={{
+				prevLink: prevPhoto ? `/photos/${prevPhoto.id}/` : null,
+				nextLink: nextPhoto ? `/photos/${nextPhoto.id}/` : null,
+			}}
+		>
 			const image = document.querySelector('.post-hero__image');
+			const lightbox = document.querySelector('.lightbox');
+			const lightboxTriggers = document.querySelectorAll('.photo-lightbox-trigger');
+			const lightboxClose = document.querySelectorAll('[data-lightbox-close]');
 			if (image) {
 				const applyGlow = () => {
 					const canvas = document.createElement('canvas');
@@ -100,6 +133,38 @@ const { Content } = await render(photo);
 					image.addEventListener('load', applyGlow, { once: true });
 				}
 			}
+
+			const openLightbox = () => {
+				if (!lightbox) return;
+				lightbox.classList.add('is-open');
+				lightbox.setAttribute('aria-hidden', 'false');
+				document.body.style.overflow = 'hidden';
+			};
+
+			const closeLightbox = () => {
+				if (!lightbox) return;
+				lightbox.classList.remove('is-open');
+				lightbox.setAttribute('aria-hidden', 'true');
+				document.body.style.overflow = '';
+			};
+
+			lightboxTriggers.forEach((trigger) => {
+				trigger.addEventListener('click', openLightbox);
+			});
+
+			lightboxClose.forEach((button) => {
+				button.addEventListener('click', closeLightbox);
+			});
+
+			window.addEventListener('keydown', (event) => {
+				if (event.key === 'Escape') closeLightbox();
+				if (event.key === 'ArrowLeft' && prevLink) {
+					window.location.assign(prevLink);
+				}
+				if (event.key === 'ArrowRight' && nextLink) {
+					window.location.assign(nextLink);
+				}
+			});
 		</script>
 	</body>
 </html>

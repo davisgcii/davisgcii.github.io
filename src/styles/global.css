@@ -373,14 +373,83 @@ hr {
 
 .post-hero {
 	margin: 2rem 0 2.5rem;
+	position: relative;
+}
+
+.photo-lightbox-trigger {
+	all: unset;
+	display: block;
+	cursor: zoom-in;
 }
 
 .post-hero__image {
+	max-width: 100%;
 	width: 100%;
 	height: auto;
 	max-height: 560px;
 	object-fit: contain;
 	background: var(--surface);
+	margin: 0;
+}
+
+.lightbox {
+	position: fixed;
+	inset: 0;
+	display: grid;
+	place-items: center;
+	opacity: 0;
+	visibility: hidden;
+	pointer-events: none;
+	transition: opacity 0.2s ease, visibility 0.2s ease;
+	z-index: 30;
+}
+
+.lightbox.is-open {
+	opacity: 1;
+	visibility: visible;
+	pointer-events: auto;
+}
+
+.lightbox__backdrop {
+	position: absolute;
+	inset: 0;
+	background: rgba(10, 10, 20, 0.6);
+	backdrop-filter: blur(8px);
+}
+
+.lightbox__content {
+	position: relative;
+	z-index: 1;
+	max-width: min(92vw, 1200px);
+	max-height: 90vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 1.5rem;
+}
+
+.lightbox__image {
+	max-width: 100%;
+	max-height: 85vh;
+	border-radius: 18px;
+	box-shadow: 0 30px 60px rgba(10, 10, 20, 0.35);
+	background: var(--card-bg);
+}
+
+.lightbox__close {
+	position: absolute;
+	top: 0.6rem;
+	right: 0.6rem;
+	border: 1px solid var(--line);
+	background: var(--card-bg);
+	color: var(--ink);
+	border-radius: 999px;
+	width: 34px;
+	height: 34px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
 }
 
 .prose {
