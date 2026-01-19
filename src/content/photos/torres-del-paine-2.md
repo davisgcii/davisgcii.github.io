@@ -1,6 +1,6 @@
 ---
 title: Torres del Paine II
-description: Low clouds and long trails.
+description: On the drive back to Puerto Natales.
 capturedDate: 2019-02-15
 location: Patagonia, Chile
 heroImage: ../../assets/photos/torres-del-paine-2.jpg

@@ -1,6 +1,6 @@
 ---
 title: More efficient finetuning
-description: LoRA, local inference, and a small PyTorch implementation.
+description: Low-rank adapters for fast, local finetuning.
 pubDate: 2023-09-25
 heroImage: ../../assets/posts/more-efficient-finetuning/hero.png
 ---

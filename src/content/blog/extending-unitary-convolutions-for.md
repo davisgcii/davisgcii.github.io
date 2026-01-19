@@ -1,6 +1,6 @@
 ---
 title: Extending unitary convolutions for learning on graphs
-description: Unitary convolutions for long-range graph learning.
+description: Reducing oversmoothing with unitary graph convolutions.
 pubDate: 2025-02-18
 heroImage: ../../assets/posts/extending-unitary-convolutions-for/hero.png
 ---

@@ -1,6 +1,6 @@
 ---
 title: Even more efficient finetuning
-description: A tighter look at efficient finetuning.
+description: Fewer trainable parameters, better performance.
 pubDate: 2023-10-23
 heroImage: ../../assets/posts/even-more-efficient-finetuning/hero.png
 ---
