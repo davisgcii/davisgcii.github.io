@@ -55,6 +55,45 @@ const { title, description, image = FallbackImage } = Astro.props;
 	document.documentElement.dataset.theme = theme;
 </script>
 
+<script is:inline>
+	const copyIcon = `
+		<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8">
+			<rect x="9" y="9" width="11" height="11" rx="2"></rect>
+			<rect x="4" y="4" width="11" height="11" rx="2"></rect>
+		</svg>
+	`;
+
+	const addCopyButtons = () => {
+		document.querySelectorAll('pre.astro-code').forEach((block) => {
+			if (block.querySelector('.code-copy')) return;
+			const button = document.createElement('button');
+			button.className = 'code-copy';
+			button.type = 'button';
+			button.setAttribute('aria-label', 'Copy code');
+			button.innerHTML = copyIcon;
+			button.addEventListener('click', async () => {
+				const code = block.querySelector('code');
+				const text = code ? code.innerText : '';
+				try {
+					await navigator.clipboard.writeText(text);
+					button.classList.add('code-copy--done');
+					setTimeout(() => button.classList.remove('code-copy--done'), 1200);
+				} catch (err) {
+					button.classList.add('code-copy--error');
+					setTimeout(() => button.classList.remove('code-copy--error'), 1200);
+				}
+			});
+			block.appendChild(button);
+		});
+	};
+
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', addCopyButtons);
+	} else {
+		addCopyButtons();
+	}
+</script>
+
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website" />
 <meta property="og:url" content={Astro.url} />

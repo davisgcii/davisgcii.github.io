@@ -21,10 +21,10 @@ const photos = (await getCollection('photos')).sort(
 		<Header />
 		<main>
 			<section class="page-intro">
-				<p class="tagline">Photo diary</p>
-				<h1>Light, places, and quiet mornings.</h1>
+				<p class="tagline">Field notes</p>
+				<h1>Trails, weather, and in-between light.</h1>
 				<p>
-					A living grid of small moments. Each frame includes the details I want to remember later.
+					A running log of hikes, travel, and whatever pulls me outside with a camera.
 				</p>
 			</section>
 
@@ -37,16 +37,24 @@ const photos = (await getCollection('photos')).sort(
 					{
 						photos.map((photo, index) => (
 							<a
-								class="card"
+								class="card card--media photo-card"
 								href={`/photos/${photo.id}/`}
 								style={`--i:${index}`}
 							>
-								<Image src={photo.data.heroImage} alt={photo.data.title} width={600} height={450} />
-								<h3 class="card-title">{photo.data.title}</h3>
-								<p class="card-meta">
-									<FormattedDate date={photo.data.capturedDate} />
-									{photo.data.location ? ` • ${photo.data.location}` : ''}
-								</p>
+								<Image
+									class="card-image"
+									src={photo.data.heroImage}
+									alt={photo.data.title}
+									width={800}
+									height={500}
+								/>
+								<div class="card-body">
+									<h3 class="card-title">{photo.data.title}</h3>
+									<p class="card-meta">
+										<FormattedDate date={photo.data.capturedDate} />
+										{photo.data.location ? ` • ${photo.data.location}` : ''}
+									</p>
+								</div>
 							</a>
 						))
 					}

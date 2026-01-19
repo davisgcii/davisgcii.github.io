@@ -1,0 +1,7 @@
+---
+title: Teeth I
+description: First day on the Dientes ridge.
+capturedDate: 2019-02-12
+location: Dientes de Navarino, Chile
+heroImage: ../../assets/photos/teeth-1.jpg
+---

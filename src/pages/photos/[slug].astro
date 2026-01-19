@@ -42,7 +42,7 @@ const { Content } = await render(photo);
 					{photo.data.camera ? ` • ${photo.data.camera}` : ''}
 				</div>
 				<div class="post-hero">
-					<Image src={photo.data.heroImage} alt={photo.data.title} width={1200} height={900} />
+					<Image class="post-hero__image" src={photo.data.heroImage} alt={photo.data.title} width={1200} height={900} />
 				</div>
 				<div class="prose">
 					<Content />
@@ -50,5 +50,56 @@ const { Content } = await render(photo);
 			</section>
 		</main>
 		<Footer />
+		<script is:inline>
+			const image = document.querySelector('.post-hero__image');
+			if (image) {
+				const applyGlow = () => {
+					const canvas = document.createElement('canvas');
+					const ctx = canvas.getContext('2d', { willReadFrequently: true });
+					if (!ctx) return;
+					const size = 24;
+					canvas.width = size;
+					canvas.height = size;
+					ctx.drawImage(image, 0, 0, size, size);
+					const data = ctx.getImageData(0, 0, size, size).data;
+
+					const sampleEdge = (edge) => {
+						let r = 0;
+						let g = 0;
+						let b = 0;
+						let count = 0;
+						for (let i = 0; i < size; i++) {
+							let idx;
+							if (edge === 'top') idx = i * 4;
+							if (edge === 'bottom') idx = ((size - 1) * size + i) * 4;
+							if (edge === 'left') idx = i * size * 4;
+							if (edge === 'right') idx = (i * size + (size - 1)) * 4;
+							r += data[idx];
+							g += data[idx + 1];
+							b += data[idx + 2];
+							count += 1;
+						}
+						return {
+							r: Math.round(r / count),
+							g: Math.round(g / count),
+							b: Math.round(b / count),
+						};
+					};
+
+					const top = sampleEdge('top');
+					const bottom = sampleEdge('bottom');
+					const root = document.documentElement;
+					root.style.setProperty('--accent-glow', `rgba(${top.r}, ${top.g}, ${top.b}, 0.8)`);
+					root.style.setProperty('--accent-secondary-glow', `rgba(${bottom.r}, ${bottom.g}, ${bottom.b}, 0.6)`);
+					root.classList.add('photo-glow-active');
+				};
+
+				if (image.complete) {
+					applyGlow();
+				} else {
+					image.addEventListener('load', applyGlow, { once: true });
+				}
+			}
+		</script>
 	</body>
 </html>
